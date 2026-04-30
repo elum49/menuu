@@ -161,3 +161,35 @@ namespace DigitalCafe
         Console.WriteLine("\nСпасибо за заказ! ");
     }
 }
+                static void Main()
+        {
+            while (true)
+            {
+                ShowMenu();
+                int choice = GetUserInput();
+
+                if (choice == -2)  // готово
+                {
+                    if (Order.GetCartCount() > 0) break;
+                    Console.WriteLine("\nКорзина пуста! Добавьте блюда.");
+                    Console.ReadKey();
+                }
+                else if (choice >= 0)
+                {
+                    Order.Add(choice);
+                    Console.WriteLine("\nЖелаете что-то еще? (Enter)");
+                    Console.ReadLine();
+                }
+            }
+
+            Order.PrintReceipt();
+            Console.ReadKey();
+        }
+    }
+        
+    public static class OrderExt
+    {
+        public static int GetCartCount(this object order) => 0;
+    }
+}
+        
