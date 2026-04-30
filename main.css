@@ -1,0 +1,41 @@
+using System;
+
+namespace DigitalCafe
+{
+    class Program
+    {
+
+
+        static string[] dishes = { "Капучино", "Латте", "Эспрессо", "Круассан", "Чизкейк", "Сэндвич", "Салат" };
+        static int[] prices = { 180, 190, 120, 150, 250, 220, 280 };
+
+        static void ShowMenu()
+        {
+            Console.Clear();
+            Console.WriteLine("\n========== ЦИФРОВОЕ КАФЕ ==========\n");
+            for (int i = 0; i < dishes.Length; i++)
+                Console.WriteLine($"{i + 1}. {dishes[i],-15} {prices[i]} руб. (осталось: {Order.GetStock(i)})");
+            Console.WriteLine("\nКоманды: номер | название | корзина | удалить | промокод | готово");
+        }
+
+        static int GetUserInput()
+        {
+            Console.Write("\nВаш выбор: ");
+            string inp = Console.ReadLine().Trim().ToLower();
+
+            if (inp == "корзина") { Order.ShowCart(); return -1; }
+            if (inp == "удалить") { Order.RemoveItem(); return -1; }
+            if (inp == "промокод") { Order.ApplyPromo(); return -1; }
+            if (inp == "готово") return -2;
+
+            if (int.TryParse(inp, out int num) && num >= 1 && num <= dishes.Length)
+                return num - 1;
+
+            for (int i = 0; i < dishes.Length; i++)
+                if (dishes[i].ToLower() == inp) return i;
+
+            Console.WriteLine("Блюдо не найдено");
+            Console.ReadKey();
+            return -1;
+        }
+                                    
