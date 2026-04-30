@@ -38,4 +38,126 @@ namespace DigitalCafe
             Console.ReadKey();
             return -1;
         }
-                                    
+
+        static class Order
+{
+    static int[] cart = new int[10]; 
+    static int cartCount = 0;        
+    static int[] stock = { 5, 5, 5, 5, 5, 5, 5 };  
+    static bool hasDiscount = false;
+    const int DISCOUNT = 10;
+
+    public static int GetStock(int idx) => stock[idx];
+
+    public static void Add(int dishIndex)
+    {
+        if (stock[dishIndex] <= 0)
+        {
+            Console.WriteLine($"{dishes[dishIndex]} нет в наличии");
+            return;
+        }
+        if (cartCount >= cart.Length)
+        {
+            Console.WriteLine("Корзина переполнена");
+            return;
+        }
+
+        cart[cartCount] = dishIndex;
+        cartCount++;
+        stock[dishIndex]--;
+        Console.WriteLine($"Добавлено: {dishes[dishIndex]} - {prices[dishIndex]} руб.");
+    }
+
+    static int CalculateTotal()
+    {
+        int total = 0;
+        for (int i = 0; i < cartCount; i++)
+            total += prices[cart[i]];
+
+        if (hasDiscount) total = total * (100 - DISCOUNT) / 100;
+        return total;
+    }
+
+    public static void ShowCart()
+    {
+        if (cartCount == 0)
+        {
+            Console.WriteLine("\nКорзина пуста");
+        }
+        else
+        {
+            Console.WriteLine("\nВАШ ЗАКАЗ:");
+            for (int i = 0; i < cartCount; i++)
+                Console.WriteLine($"{i + 1}. {dishes[cart[i]]} - {prices[cart[i]]} руб.");
+            Console.WriteLine($"Итого: {CalculateTotal()} руб.");
+            if (hasDiscount) Console.WriteLine("Скидка 10% применена");
+        }
+        Console.WriteLine("\nНажмите Enter...");
+        Console.ReadLine();
+    }
+
+    public static void RemoveItem()
+    {
+        if (cartCount == 0)
+        {
+            Console.WriteLine("\nКорзина пуста");
+            Console.ReadKey();
+            return;
+        }
+
+        ShowCart();
+        Console.Write("Введите номер для удаления: ");
+        if (int.TryParse(Console.ReadLine(), out int pos) && pos >= 1 && pos <= cartCount)
+        {
+            int idx = cart[pos - 1];
+            for (int i = pos - 1; i < cartCount - 1; i++)
+                cart[i] = cart[i + 1];
+            cartCount--;
+            stock[idx]++;
+            Console.WriteLine($"Удалено: {dishes[idx]}");
+        }
+        else Console.WriteLine("Неверный номер");
+        Console.ReadKey();
+    }
+
+    public static void ApplyPromo()
+    {
+        if (hasDiscount)
+        {
+            Console.WriteLine("Промокод уже использован");
+            Console.ReadKey();
+            return;
+        }
+
+        Console.Write("Введите промокод: ");
+        string code = Console.ReadLine().Trim().ToLower();
+
+        if (code == "cafe2024" || code == "скидка10" || code == "welcome")
+        {
+            hasDiscount = true;
+            Console.WriteLine("Скидка 10% применена!");
+        }
+        else Console.WriteLine("Неверный промокод");
+        Console.ReadKey();
+    }
+
+    public static void PrintReceipt()
+    {
+        Console.Clear();
+        int subtotal = 0;
+        for (int i = 0; i < cartCount; i++)
+            subtotal += prices[cart[i]];
+
+        int total = hasDiscount ? subtotal * (100 - DISCOUNT) / 100 : subtotal;
+
+        Console.WriteLine("\n==================== ЧЕК ====================\n");
+        for (int i = 0; i < cartCount; i++)
+            Console.WriteLine($"{dishes[cart[i]],-20} {prices[cart[i]],3} руб.");
+
+        Console.WriteLine("\n" + "".PadRight(44, '-'));
+        if (hasDiscount)
+            Console.WriteLine($"Скидка {DISCOUNT}%:        -{subtotal * DISCOUNT / 100,3} руб.");
+        Console.WriteLine($"ИТОГ К ОПЛАТЕ:       {total,3} руб.");
+        Console.WriteLine("\nСпасибо за заказ! ");
+    }
+}
